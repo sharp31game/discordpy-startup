@@ -1,21 +1,26 @@
-from discord.ext import commands
-import os
-import traceback
+import random ,discord
 
-bot = commands.Bot(command_prefix='/')
-token = os.environ['DISCORD_BOT_TOKEN']
+# 自分のBotのアクセストークンに置き換えてください
+TOKEN = 'ODU2MTI0NzQzOTg3NjI1OTg0.YM8eTA.O2li6kyEvSZyJklH66VhVqgXTg0'
 
-
-@bot.event
-async def on_command_error(ctx, error):
-    orig_error = getattr(error, "original", error)
-    error_msg = ''.join(traceback.TracebackException.from_exception(orig_error).format())
-    await ctx.send(error_msg)
-
-
-@bot.command()
-async def ping(ctx):
-    await ctx.send('pong')
-
-
-bot.run(token)
+# 接続に必要なオブジェクトを生成
+client = discord.Client()
+# 起動時に動作する処理
+@client.event
+async def on_ready():
+    # 起動したらターミナルにログイン通知が表示される
+    print('ログインしました')
+hina = open("hina.txt", "r").read().splitlines()
+# メッセージ受信時に動作する処理
+@client.event
+async def on_message(message):
+    # メッセージ送信者がBotだった場合は無視する
+    if message.author.bot:
+        return
+    global hina
+    if message.content.startswith("!hina"):
+        await message.channel.send(random.choice(hina))
+    if message.content.startswith("!upload"):
+        hina = open("hina.txt", "r").read().splitlines()
+# Botの起動とDiscordサーバーへの接続
+client.run(TOKEN)
